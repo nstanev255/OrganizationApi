@@ -54,35 +54,38 @@ public class AuthServiceImpl : IAuthService
         
         // If we got here, this means that we have registered the user accordingly.
         // We will "Login", or "Generate the JWT token" so that we can be logged in on register if needed.
-        var token = await GenerateToken(user.UserName);
-        var response = new AuthenticationResponseModel
+        var token = await GenerateToken(user);
+        return  new AuthenticationResponseModel
         {
             Username = user.UserName,
             Email = user.Email,
             Token = token
         };
-
-        return response;
     }
 
     public async Task<AuthenticationResponseModel> Login(LoginRequestModel model)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByNameAsync(model.Username);
+        if (user == null)
+            throw new Exception("Error logging in user.");
+        if (await _userManager.CheckPasswordAsync(user, model.Password))
+            throw new Exception("Error logging in user.");
+
+        var token = await GenerateToken(user);
+
+        return new AuthenticationResponseModel
+        {
+            Username = user.UserName,
+            Email = user.Email,
+            Token = token
+        };
     }
 
     /**
-     * This method will generate a token for user, by username.
+     * This method will generate a token for user.
      */
-    private async Task<string> GenerateToken(string username)
+    private async Task<string> GenerateToken(User user)
     {
-        
-        // We will find the user in the database.
-        var user = await _userManager.FindByNameAsync(username);
-        if (user == null)
-        {
-            throw new Exception("Error generating JWT token.");
-        }
-
         // We will extract the roles.
         var roles = await _userManager.GetRolesAsync(user);
 
