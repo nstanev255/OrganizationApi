@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Context;
 using OrganizationApi.Entity;
+using OrganizationApi.Middleware;
 using OrganizationApi.Services;
 using OrganizationApi.Services.Impl;
 
@@ -47,6 +48,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddScoped<IImportService, ImportServiceImpl>();
+builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 
 
 var app = builder.Build();
@@ -64,5 +66,7 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
+
+app.UseMiddleware<AppMiddleware>();
 
 app.Run();
