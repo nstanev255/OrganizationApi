@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ExcelDataReader.Log;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Dto;
@@ -31,6 +32,12 @@ public class AuthServiceImpl : IAuthService
             throw new Exception("Error with the registration.");
         }
 
+        var existsEmail = await _userManager.FindByEmailAsync(model.Email);
+        if (existsEmail != null)
+        {
+            throw new Exception("Error with the registration.");
+        }
+
         var user = new User
         {
             Email = model.Email,
@@ -42,7 +49,7 @@ public class AuthServiceImpl : IAuthService
 
         if (!createResult.Succeeded)
         {
-            throw new Exception("Error creating user.");
+            throw new Exception("Error creating user. " + createResult.Errors.First().Description);
         }
 
         if (!await _roleManager.RoleExistsAsync(role))
@@ -68,8 +75,8 @@ public class AuthServiceImpl : IAuthService
         var user = await _userManager.FindByNameAsync(model.Username);
         if (user == null)
             throw new Exception("Error logging in user.");
-        if (await _userManager.CheckPasswordAsync(user, model.Password))
-            throw new Exception("Error logging in user.");
+        if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            throw new Exception("Error logging in user. h");
 
         var token = await GenerateToken(user);
 

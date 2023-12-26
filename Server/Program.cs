@@ -49,6 +49,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IImportService, ImportServiceImpl>();
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
+builder.Services.AddTransient<AppMiddleware>();
 
 
 var app = builder.Build();
