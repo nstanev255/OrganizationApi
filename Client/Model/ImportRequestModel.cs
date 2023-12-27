@@ -1,33 +1,34 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
-namespace OrganizationApi.Dto;
+namespace Client.Model;
 
-public class OrganizationRequestModel
+public class ImportRequestModel
 {
     [JsonProperty("index")]
-    public int Index { get; set; }
+    public string Index { get; set; }
     
     [JsonProperty("organization_id")]
     public string OrganizationId { get; set; }
     
     [JsonProperty("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [JsonProperty("website")]
     public string Website { get; set; }
     
-    [JsonProperty("country")] 
+    [JsonProperty("country")]
     public string Country { get; set; }
 
+    [JsonProperty("founded")]
+    public string Founded { get; set; }
+    
     [JsonProperty("description")]
     public string Description { get; set; }
-
-    [JsonProperty("founded")]
-    public string? Founded { get; set; }
     
-    [JsonProperty("industry")] 
+    [JsonProperty("industry")]
     public string Industry { get; set; }
     
     [JsonProperty("number_of_employees")]
-    public int NumberOfEmployees { get; set; }
+    public string NumberOfEmployees { get; set; }
 }

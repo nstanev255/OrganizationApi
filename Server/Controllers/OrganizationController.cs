@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrganizationApi.Dto;
+using OrganizationApi.Dto.Jwt;
 using OrganizationApi.Services;
 
 namespace OrganizationApi.Controllers;
@@ -20,9 +22,12 @@ public class OrganizationController : ControllerBase
      * Import organizations.
      *
      * This endpoint is used for bulk importing organizations.
+     *
+     * Only admin users can import.
      */
     [HttpPost]
-    [Route("import-organizations")]
+    [Authorize]
+    [Route("bulk-import")]
     public OrganizationImportResponse ImportOrganizations(List<OrganizationRequestModel> organizationRequest)
     {
         return _importService.ImportOrganizations(organizationRequest);

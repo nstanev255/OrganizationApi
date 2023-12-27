@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Context;
+using OrganizationApi.Dto;
+using OrganizationApi.Dto.Jwt;
 using OrganizationApi.Entity;
 using OrganizationApi.Middleware;
 using OrganizationApi.Services;
@@ -26,6 +28,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(o =>
 {
+    o.SaveToken = true;
+    o.RequireHttpsMetadata = false;
     o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = builder.Configuration["JWT:Issuer"],
@@ -33,7 +37,6 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
     };
 });
 
@@ -63,11 +66,47 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseMiddleware<AppMiddleware>();
+
+
+// Create Admin user initially.
+using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    var authService = serviceScope.ServiceProvider.GetRequiredService<IAuthService>();
+    var configuration = serviceScope.ServiceProvider.GetRequiredService<IConfiguration>();
+    try
+    {
+        
+
+        var register = await authService.Register(new RegisterRequestModel
+        {
+            Email = configuration["Auth:Email"],
+            Password = configuration["Auth:Password"],
+            Username = configuration["Auth:Username"]
+        }, UserRoles.Admin);
+
+        Console.WriteLine("Admin created successfully...");
+        Console.WriteLine("Token: " + register.Token);
+
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine("Admin user already created...");
+        Console.WriteLine("Getting admin auth token....");
+
+        var login = await authService.Login(new LoginRequestModel
+        {
+            Username = configuration["Auth:Username"],
+            Password = configuration["Auth:Password"],
+        });
+
+        Console.WriteLine("Admin Token : " + login.Token);
+    }
+}
 
 app.Run();
