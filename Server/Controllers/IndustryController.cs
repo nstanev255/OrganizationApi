@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrganizationApi.Dto;
+using OrganizationApi.Dto.Jwt;
 using OrganizationApi.Services;
 
 namespace OrganizationApi.Controllers;
@@ -62,7 +63,7 @@ public class IndustryController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize]
+    [Authorize(Roles = UserRoles.Admin)]
     [Route("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
