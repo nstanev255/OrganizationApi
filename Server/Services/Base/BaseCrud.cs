@@ -30,8 +30,18 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
 
     public async Task Delete(int entityId)
     {
-        var attached = dao.Attach(new T { Id = entityId });
-        dao.Remove(attached.Entity);
-        await attached.Context.SaveChangesAsync();
+        // Find the entity.
+        var entity = await dao.Where(t => t.Id == entityId).FirstOrDefaultAsync();
+        if (entity != null)
+        {
+            // And the soft-delete it.
+            entity.IsDeleted = true;
+            // Commit to database.
+            await dao.Update(entity).Context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("Entity cannot be deleted, as it does not exist");
+        }
     }
 }

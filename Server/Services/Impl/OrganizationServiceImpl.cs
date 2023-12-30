@@ -27,7 +27,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         return await dao.FirstOrDefaultAsync(o => o.OrganizationId == id);
     }
 
-    public async Task<OrganizationRequestModel> UpdateOrganization(string id, OrganizationUpdateRequestModel model)
+    public async Task<Organization> UpdateOrThrow(string id, OrganizationUpdateRequestModel model)
     {
         var organization = await FindOneByOrganizationId(id);
         if (organization == null)
@@ -102,20 +102,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
             }
         }
 
-        var updated = await Update(organization);
-
-        return new OrganizationRequestModel
-        {
-            Name = updated.Name,
-            Description = updated.Description,
-            Country = updated.Country.Name,
-            Founded = updated.Founded.ToString(),
-            Index = updated.Id,
-            Industry = updated.Industry.Name,
-            NumberOfEmployees = updated.NumberOfEmployees,
-            OrganizationId = updated.OrganizationId,
-            Website = organization.Website
-        };
+        return await Update(organization);
     }
 
     public async Task<ImportOrganizationModel> ImportOrganization(OrganizationRequestModel organization)

@@ -46,7 +46,20 @@ public class OrganizationController : ControllerBase
     [Route("{id}")]
     public async Task<OrganizationRequestModel> Update(string id, OrganizationUpdateRequestModel model)
     {
-        return await _organizationService.UpdateOrganization(id, model);
+        var organization = await _organizationService.UpdateOrThrow(id, model);
+        
+        return new OrganizationRequestModel
+        {
+            Name = organization.Name,
+            Description = organization.Description,
+            Country = organization.Country.Name,
+            Founded = organization.Founded.ToString(),
+            Index = organization.Id,
+            Industry = organization.Industry.Name,
+            NumberOfEmployees = organization.NumberOfEmployees,
+            OrganizationId = organization.OrganizationId,
+            Website = organization.Website
+        };
     }
 
     [HttpDelete]
@@ -60,8 +73,16 @@ public class OrganizationController : ControllerBase
             throw new Exception("Organization does not exist");
         }
 
-        // Delete the organization.
-        await _organizationService.Delete(organization.Id);
+        try
+        {
+            await _organizationService.Delete(organization.Id);
+            // Delete the organization.
+        }
+        catch
+        {
+            throw new Exception("Could not delete Organization");
+        }
+        
 
         return Ok(200);
     }
