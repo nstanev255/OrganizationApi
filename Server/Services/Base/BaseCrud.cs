@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using OrganizationApi.Entity.Base;
 
 namespace OrganizationApi.Services.Base;
 
-public abstract class BaseCrud<T> : IBaseCrud<T> where T: class
+public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
 {
     protected readonly DbSet<T> dao;
 
@@ -27,8 +28,10 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T: class
         return updated.Entity;
     }
 
-    public Task<T?> Delete(T entity)
+    public async Task Delete(int entityId)
     {
-        throw new NotImplementedException();
+        var attached = dao.Attach(new T { Id = entityId });
+        dao.Remove(attached.Entity);
+        await attached.Context.SaveChangesAsync();
     }
 }

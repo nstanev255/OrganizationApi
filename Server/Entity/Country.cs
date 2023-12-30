@@ -1,8 +1,9 @@
+using OrganizationApi.Entity.Base;
+
 namespace OrganizationApi.Entity;
 
-public class Country
+public class Country : BaseEntity
 {
-    public int Id { get; set; }
     public string? Code { get; set; }
     public string Name { get; set; }
     public List<Organization> Organizations { get; set; } = new List<Organization>();

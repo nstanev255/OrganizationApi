@@ -1,8 +1,9 @@
+using OrganizationApi.Entity.Base;
+
 namespace OrganizationApi.Entity;
 
-public class Organization
+public class Organization : BaseEntity
 {
-    public int Id { get; set; }
     public string OrganizationId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }

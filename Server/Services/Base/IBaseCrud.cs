@@ -1,8 +1,10 @@
+using OrganizationApi.Entity.Base;
+
 namespace OrganizationApi.Services.Base;
 
-public interface IBaseCrud<T> where T : class
+public interface IBaseCrud<T> where T : BaseEntity
 {
     Task<T> Create(T entity);
     Task<T> Update(T entity);
-    Task<T?> Delete(int entityId);
+    Task Delete(int entityId);
 }
