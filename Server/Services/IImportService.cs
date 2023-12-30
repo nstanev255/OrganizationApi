@@ -4,5 +4,5 @@ namespace OrganizationApi.Services;
 
 public interface IImportService
 {
-    public OrganizationImportResponse ImportOrganizations(List<OrganizationRequestModel> organizations);
+    public Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizations);
 }

@@ -28,9 +28,9 @@ public class OrganizationController : ControllerBase
     [HttpPost]
     [Authorize]
     [Route("bulk-import")]
-    public OrganizationImportResponse ImportOrganizations(List<OrganizationRequestModel> organizationRequest)
+    public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizationRequest)
     {
-        return _importService.ImportOrganizations(organizationRequest);
+        return await _importService.ImportOrganizations(organizationRequest);
     }
 
 
