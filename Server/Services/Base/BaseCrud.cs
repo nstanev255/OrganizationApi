@@ -12,7 +12,16 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
         this.dao = dao;
     }
 
-    public async Task<T> Create(T entity)
+    /**
+     * We will pass string as the param, the parse it to int.
+     * This is done, so we can have flexibility if we want to override this method and search for something else...
+     */
+    public virtual async Task<T?> Read(string id)
+    {
+        return await dao.Where(e => e.Id == int.Parse(id)).FirstOrDefaultAsync();
+    }
+
+    public virtual async Task<T> Create(T entity)
     {
         var industry = await dao.AddAsync(entity);
         await industry.Context.SaveChangesAsync();
@@ -20,7 +29,7 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
         return industry.Entity;
     }
 
-    public async Task<T> Update(T newEntity)
+    public virtual async Task<T> Update(T newEntity)
     {
         var updated = dao.Update(newEntity);
         await updated.Context.SaveChangesAsync();
@@ -28,7 +37,7 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
         return updated.Entity;
     }
 
-    public async Task Delete(int entityId)
+    public virtual async Task Delete(int entityId)
     {
         // Find the entity.
         var entity = await dao.Where(t => t.Id == entityId).FirstOrDefaultAsync();

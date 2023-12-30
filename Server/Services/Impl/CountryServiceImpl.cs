@@ -40,7 +40,7 @@ public class CountryServiceImpl : BaseCrud<Country>, ICountryService
     /**
      * We will override the BaseCrud create method, so we can add the country code.
      */
-    public async Task<Country> Create(Country entity)
+    public override async Task<Country> Create(Country entity)
     {
         return await base.Create(new Country
         {
@@ -60,16 +60,14 @@ public class CountryServiceImpl : BaseCrud<Country>, ICountryService
         return await Create(new Country {Name = entity.Name});
     }
 
-    public async Task<Country?> FindOneByIdOrName(int id, string name)
+    public async Task<Country?> FindOneById(int id, string name)
     {
-        return await dao.Where(c => c.Id == id || c.Name == name).FirstOrDefaultAsync();
+        return await dao.Where(c => c.Id == id).FirstOrDefaultAsync();
     }
 
     public async Task<Country> UpdateOrThrow(int id, CountryModel model)
     {
-        // If we have a matching entry for either name or id, we must not allow the update to happen.
-        // As we can't have two countries with either the same names or the same ids.
-        var dbEntity = await FindOneByIdOrName(id, model.Name);
+        var dbEntity = await FindOneById(id, model.Name);
         if (dbEntity == null)
         {
             throw new Exception("Country does not exist");
@@ -77,6 +75,12 @@ public class CountryServiceImpl : BaseCrud<Country>, ICountryService
 
         if (dbEntity.Name != model.Name)
         {
+            var nameExists = await FindOneByName(model.Name);
+            if (nameExists != null)
+            {
+                throw new Exception("Country with the same name already exists");
+            }
+
             var newCode = GetCountryCode(model.Name);
             dbEntity.Name = model.Name;
             dbEntity.Code = newCode;

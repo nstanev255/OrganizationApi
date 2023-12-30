@@ -17,6 +17,25 @@ public class CountryController : ControllerBase
         _countryService = countryService;
     }
 
+    [HttpGet]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<CountryResponseModel> Read(int id)
+    {
+        var country = await _countryService.Read(id.ToString());
+        if (country == null)
+        {
+            throw new Exception("Country not found");
+        }
+
+        return new CountryResponseModel
+        {
+            Id = country.Id,
+            Code = country.Code,
+            Name = country.Name
+        };
+    }
+
     [HttpPost]
     [Authorize]
     [Route("")]
