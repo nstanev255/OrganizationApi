@@ -11,7 +11,7 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T: class
         this.dao = dao;
     }
 
-    public async Task<T?> Create(T entity)
+    public async Task<T> Create(T entity)
     {
         var industry = await dao.AddAsync(entity);
         await industry.Context.SaveChangesAsync();
@@ -19,7 +19,7 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T: class
         return industry.Entity;
     }
 
-    public async Task<T?> Update(T newEntity)
+    public async Task<T> Update(T newEntity)
     {
         var updated = dao.Update(newEntity);
         await updated.Context.SaveChangesAsync();

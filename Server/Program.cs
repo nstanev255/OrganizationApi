@@ -52,11 +52,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 
-builder.Services.AddScoped<IOrganizationService, OrganizationServiceImpl>();
 builder.Services.AddScoped<ICountryService, CountryServiceImpl>();
 builder.Services.AddScoped<IIndustryService, IndustryServiceImpl>();
+builder.Services.AddScoped<IOrganizationService, OrganizationServiceImpl>();
 
-builder.Services.AddScoped<IImportService, ImportServiceImpl>();
+
 builder.Services.AddTransient<AppMiddleware>();
 
 
