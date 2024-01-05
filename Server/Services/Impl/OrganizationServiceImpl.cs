@@ -81,24 +81,24 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
 
                 await _industryService.Update(industry);
             }
-
-            if (model.Country != null)
+        }
+        
+        if (model.Country != null)
+        {
+            var country = await _countryService.FindOneByName(model.Country);
+            if (country == null)
             {
-                var country = await _countryService.FindOneByName(model.Country);
-                if (country == null)
-                {
-                    throw new Exception("The country does not exist.");
-                }
+                throw new Exception("The country does not exist.");
+            }
 
-                if (organization.Country == null || country.Name != organization.Country.Name)
-                {
-                    country.Organizations.RemoveAll(o => o.OrganizationId == organization.OrganizationId);
+            if (organization.Country == null || country.Name != organization.Country.Name)
+            {
+                country.Organizations.RemoveAll(o => o.OrganizationId == organization.OrganizationId);
                     
-                    organization.Country = country;
-                    country.Organizations.Add(organization);
+                organization.Country = country;
+                country.Organizations.Add(organization);
                     
-                    await _countryService.Update(country);
-                }
+                await _countryService.Update(country);
             }
         }
 
