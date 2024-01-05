@@ -198,4 +198,12 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
             ImportedCountries = importedCountries
         };
     }
+
+    /**
+     * We will override the organization Read function, as we want to read it for a different id.
+     */
+    public override Task<Organization?> Read(string id)
+    {
+        return dao.Where(o => o.OrganizationId == id).FirstOrDefaultAsync();
+    }
 }

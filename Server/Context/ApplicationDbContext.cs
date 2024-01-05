@@ -20,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasQueryFilter(o => !o.IsDeleted);
         builder.Entity<Country>()
             .HasQueryFilter(o => !o.IsDeleted);
+        
+        base.OnModelCreating(builder);
     }
 
     public ApplicationDbContext(DbContextOptions options) : base(options)

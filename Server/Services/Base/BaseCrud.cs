@@ -12,6 +12,11 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
         this.dao = dao;
     }
 
+    public virtual List<T> ReadAll()
+    {
+        return dao.ToList();
+    }
+
     /**
      * We will pass string as the param, the parse it to int.
      * This is done, so we can have flexibility if we want to override this method and search for something else...

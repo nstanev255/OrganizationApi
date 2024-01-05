@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using OrganizationApi.Entity;
 
 namespace OrganizationApi.Dto;
 
@@ -30,4 +31,29 @@ public class OrganizationRequestModel
     
     [JsonProperty("number_of_employees")]
     public int NumberOfEmployees { get; set; }
+
+    public OrganizationRequestModel()
+    {
+    }
+
+    public OrganizationRequestModel(Organization organization)
+    {
+        Name = organization.Name;
+        Description = organization.Description;
+        if (organization.Country != null)
+        {
+            Country = organization.Country.Name;
+        }
+        if (organization.Industry != null)
+        {
+            Industry = organization.Industry.Name;
+        }
+
+        Founded = organization.Founded.ToString();
+        Index = organization.Id;
+
+        NumberOfEmployees = organization.NumberOfEmployees;
+        OrganizationId = organization.OrganizationId;
+        Website = organization.Website;
+    }
 }

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Dto;
 using OrganizationApi.Dto.Jwt;
+using OrganizationApi.Entity;
 using OrganizationApi.Services;
 
 namespace OrganizationApi.Controllers;
@@ -16,6 +18,35 @@ public class OrganizationController : ControllerBase
     public OrganizationController(IOrganizationService organizationService)
     {
         _organizationService = organizationService;
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("")]
+    public List<OrganizationRequestModel> ReadAll()
+    {
+        var organizations = _organizationService.ReadAll();
+        
+        if (organizations.IsNullOrEmpty())
+        {
+            throw new Exception("No records found");
+        }
+
+        return new List<OrganizationRequestModel>(organizations.Select(o => new OrganizationRequestModel(o)));
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<OrganizationRequestModel> Read(string id)
+    {
+        var organization = await _organizationService.Read(id);
+        if (organization == null)
+        {
+            throw new Exception("Not found.");
+        }
+
+        return new OrganizationRequestModel(organization);
     }
 
     /**
@@ -47,19 +78,8 @@ public class OrganizationController : ControllerBase
     public async Task<OrganizationRequestModel> Update(string id, OrganizationUpdateRequestModel model)
     {
         var organization = await _organizationService.UpdateOrThrow(id, model);
-        
-        return new OrganizationRequestModel
-        {
-            Name = organization.Name,
-            Description = organization.Description,
-            Country = organization.Country.Name,
-            Founded = organization.Founded.ToString(),
-            Index = organization.Id,
-            Industry = organization.Industry.Name,
-            NumberOfEmployees = organization.NumberOfEmployees,
-            OrganizationId = organization.OrganizationId,
-            Website = organization.Website
-        };
+
+        return new OrganizationRequestModel(organization);
     }
 
     [HttpDelete]

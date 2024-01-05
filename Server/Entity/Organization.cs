@@ -1,16 +1,36 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using OrganizationApi.Entity.Base;
 
 namespace OrganizationApi.Entity;
 
 public class Organization : BaseEntity
 {
+    private ILazyLoader _lazyLoader;
+    private Industry? _industry;
+    private Country? _country;
     public string OrganizationId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public int NumberOfEmployees { get; set; }
-    public Country Country { get; set; }
-    public Industry Industry { get; set; }
-
+    public Country? Country 
+    { 
+        get => _lazyLoader.Load(this, ref _country);
+        set => _country = value;
+    }
+    public Industry? Industry 
+    { 
+        get => _lazyLoader.Load(this, ref _industry);
+        set => _industry = value; 
+    }
     public int Founded { get; set; }
     public string Website { get; set; }
+    
+    public Organization()
+    {
+    }
+    
+    private Organization(ILazyLoader loader)
+    {
+        _lazyLoader = loader;
+    }
 }

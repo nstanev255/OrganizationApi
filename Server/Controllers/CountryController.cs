@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Dto;
 using OrganizationApi.Dto.Jwt;
 using OrganizationApi.Entity;
@@ -19,6 +20,22 @@ public class CountryController : ControllerBase
 
     [HttpGet]
     [Authorize]
+    [Route("")]
+    public List<CountryResponseModel> ReadAll()
+    {
+        var countries = _countryService.ReadAll();
+
+        if (countries.IsNullOrEmpty())
+        {
+            throw new Exception("No records found");
+        }
+
+
+        return new List<CountryResponseModel>(countries.Select(c => new CountryResponseModel(c)));
+    }
+
+    [HttpGet]
+    [Authorize]
     [Route("{id}")]
     public async Task<CountryResponseModel> Read(int id)
     {
@@ -28,12 +45,7 @@ public class CountryController : ControllerBase
             throw new Exception("Country not found");
         }
 
-        return new CountryResponseModel
-        {
-            Id = country.Id,
-            Code = country.Code,
-            Name = country.Name
-        };
+        return new CountryResponseModel(country);
     }
 
     [HttpPost]
@@ -42,12 +54,7 @@ public class CountryController : ControllerBase
     public async Task<CountryResponseModel> Create(CountryModel model)
     {
         var entity = await _countryService.Create(new Country { Name = model.Name });
-        return new CountryResponseModel()
-        {
-            Id = entity.Id,
-            Code = entity.Code,
-            Name = entity.Name
-        };
+        return new CountryResponseModel(entity);
     }
 
     [HttpPut]
@@ -57,12 +64,7 @@ public class CountryController : ControllerBase
     {
         var entity = await _countryService.UpdateOrThrow(id, model);
 
-        return new CountryResponseModel
-        {
-            Id = entity.Id,
-            Name = entity.Name,
-            Code = entity.Code
-        };
+        return new CountryResponseModel(entity);
     }
 
     [HttpDelete]
