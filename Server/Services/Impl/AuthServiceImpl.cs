@@ -56,7 +56,7 @@ public class AuthServiceImpl : IAuthService
             await _roleManager.CreateAsync(new IdentityRole(role));
         
         
-        if (await _roleManager.RoleExistsAsync(UserRoles.User))
+        if (await _roleManager.RoleExistsAsync(role))
             await _userManager.AddToRoleAsync(user, role);
         
         // If we got here, this means that we have registered the user accordingly.
@@ -95,13 +95,14 @@ public class AuthServiceImpl : IAuthService
     {
         // We will extract the roles.
         var roles = await _userManager.GetRolesAsync(user);
-
+        
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-
+        
+        
         foreach (var role in roles)
         {
             authClaims.Add(new Claim(ClaimTypes.Role, role));
