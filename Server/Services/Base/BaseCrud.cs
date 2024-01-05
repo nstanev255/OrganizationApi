@@ -3,7 +3,7 @@ using OrganizationApi.Entity.Base;
 
 namespace OrganizationApi.Services.Base;
 
-public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity, new()
+public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity
 {
     protected readonly DbSet<T> dao;
 
