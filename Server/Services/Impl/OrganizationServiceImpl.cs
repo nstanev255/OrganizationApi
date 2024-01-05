@@ -66,13 +66,13 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         if (model.Industry != null)
         {
             var industry = await _industryService.FindOneByName(model.Industry);
-            // If the industry is null, we will create it from here.
+            // If the industry is null, we will throw an error that it does not exist.
             if (industry == null)
             {
-                industry = await _industryService.Create(new Industry { Name = model.Industry });
+                throw new Exception("The industry does not exist.");
             }
 
-            if (industry.Name != organization.Industry.Name)
+            if (organization.Industry == null || industry.Name != organization.Industry.Name)
             {
                 industry.Organizations.RemoveAll(o => o.OrganizationId == organization.OrganizationId);
 
@@ -87,10 +87,10 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
                 var country = await _countryService.FindOneByName(model.Country);
                 if (country == null)
                 {
-                    country = await _countryService.Create(new Country { Name = model.Country });
+                    throw new Exception("The country does not exist.");
                 }
 
-                if (country.Name != organization.Country.Name)
+                if (organization.Country == null || country.Name != organization.Country.Name)
                 {
                     country.Organizations.RemoveAll(o => o.OrganizationId == organization.OrganizationId);
                     

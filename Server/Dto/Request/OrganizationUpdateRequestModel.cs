@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace OrganizationApi.Dto;
@@ -17,6 +18,7 @@ public class OrganizationUpdateRequestModel
     public string? Description { get; set; }
 
     [JsonProperty("founded")]
+    [RegularExpression(@"^(19|20)\d{2}$", ErrorMessage = "The entered year must be between 1900 - 2099")]
     public string? Founded { get; set; }
     
     [JsonProperty("industry")] 
