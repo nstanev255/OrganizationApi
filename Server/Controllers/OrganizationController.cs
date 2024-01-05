@@ -21,7 +21,6 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("")]
     public List<OrganizationRequestModel> ReadAll()
     {
@@ -36,7 +35,6 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("{id}")]
     public async Task<OrganizationRequestModel> Read(string id)
     {
@@ -106,4 +104,6 @@ public class OrganizationController : ControllerBase
 
         return Ok(200);
     }
+    
+    
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using OrganizationApi.Dto;
 using OrganizationApi.Dto.Jwt;
 using OrganizationApi.Services;
@@ -15,7 +16,19 @@ public class IndustryController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
+    [Route("")]
+    public List<IndustryResponseModel> ReadAll()
+    {
+        var industries = _industryService.ReadAll();
+        if (industries.IsNullOrEmpty())
+        {
+            throw new Exception("No records for industry");
+        }
+
+        return new List<IndustryResponseModel>(industries.Select(i => new IndustryResponseModel(i)));
+    }
+
+    [HttpGet]
     [Route("{id}")]
     public async Task<IndustryResponseModel> Read(int id)
     {
@@ -27,11 +40,7 @@ public class IndustryController : ControllerBase
             throw new Exception("Industry does not exist");
         }
 
-        return new IndustryResponseModel
-        {
-            Name = entity.Name,
-            Id = entity.Id,
-        };
+        return new IndustryResponseModel(entity);
     }
 
     [HttpPost]
@@ -41,11 +50,7 @@ public class IndustryController : ControllerBase
     {
         var entity = await _industryService.CreateOrThrow(model);
 
-        return new IndustryResponseModel
-        {
-            Name = entity.Name,
-            Id = entity.Id
-        };
+        return new IndustryResponseModel(entity);
     }
 
     [HttpPut]
@@ -55,11 +60,7 @@ public class IndustryController : ControllerBase
     {
         var entity = await _industryService.UpdateOrThrow(id, model);
 
-        return new IndustryResponseModel
-        {
-            Name = entity.Name,
-            Id = entity.Id
-        };
+        return new IndustryResponseModel(entity);
     }
 
     [HttpDelete]

@@ -19,7 +19,6 @@ public class CountryController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("")]
     public List<CountryResponseModel> ReadAll()
     {
@@ -35,7 +34,6 @@ public class CountryController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("{id}")]
     public async Task<CountryResponseModel> Read(int id)
     {
