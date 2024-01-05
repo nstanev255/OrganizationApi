@@ -11,14 +11,17 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
 {
     private readonly IIndustryService _industryService;
     private readonly ICountryService _countryService;
+    private readonly IFileService _fileService;
 
     public OrganizationServiceImpl(
         ApplicationDbContext context,
         IIndustryService industryService,
-        ICountryService countryService) : base(context.Organizations)
+        ICountryService countryService,
+        IFileService fileService) : base(context.Organizations)
     {
         _industryService = industryService;
         _countryService = countryService;
+        _fileService = fileService;
     }
 
 
@@ -205,5 +208,17 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
     public override Task<Organization?> Read(string id)
     {
         return dao.Where(o => o.OrganizationId == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<PdfDocument> GeneratePdfReport(string id)
+    {
+        var organization = await FindOneByOrganizationId(id);
+
+        if (organization == null)
+        {
+            throw new Exception("Could not find organization.");
+        }
+
+        return _fileService.CreatePdfForOrganization(organization);
     }
 }

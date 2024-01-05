@@ -106,4 +106,17 @@ public class OrganizationController : ControllerBase
     }
     
     
+    [Authorize]
+    [HttpGet]
+    [Route("{id}/pdf-report")]
+    public async Task<IActionResult> PdfReport(string id)
+    {
+        var pdfFile = await _organizationService.GeneratePdfReport(id);
+
+        return new FileStreamResult(pdfFile.Stream, "application/pdf")
+        {
+            FileDownloadName = $"{id}_report"
+        };
+    }
+    
 }

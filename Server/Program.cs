@@ -52,6 +52,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 
+builder.Services.AddScoped<IFileService, FileServiceImpl>();
 builder.Services.AddScoped<ICountryService, CountryServiceImpl>();
 builder.Services.AddScoped<IIndustryService, IndustryServiceImpl>();
 builder.Services.AddScoped<IOrganizationService, OrganizationServiceImpl>();
