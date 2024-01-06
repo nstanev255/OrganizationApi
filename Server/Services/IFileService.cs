@@ -6,5 +6,4 @@ public interface IFileService
 {
     PdfDocument CreatePdfForOrganization(Organization organization);
     PdfDocument CreatePdfFromHtml(string html);
-
 }

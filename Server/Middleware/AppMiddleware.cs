@@ -8,6 +8,15 @@ public class AppMiddleware : IMiddleware
     {
         try
         {
+            context.Response.Headers["Custom-Header"] = "Custom header";
+
+            
+            var ipAddress = context.Connection.RemoteIpAddress?.ToString();
+            if (ipAddress != "127.0.0.1" || ipAddress != "::1")
+            {
+                throw new Exception("The request comes from an unknown source.");
+            }
+
             await next.Invoke(context);
         }
         catch (Exception exception)
