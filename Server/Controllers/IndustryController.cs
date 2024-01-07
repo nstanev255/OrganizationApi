@@ -7,6 +7,8 @@ using OrganizationApi.Services;
 
 namespace OrganizationApi.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class IndustryController : ControllerBase
 {
     private readonly IIndustryService _industryService;
@@ -49,7 +51,6 @@ public class IndustryController : ControllerBase
     public async Task<IndustryResponseModel> Create(IndustryModel model)
     {
         var entity = await _industryService.CreateOrThrow(model);
-
         return new IndustryResponseModel(entity);
     }
 

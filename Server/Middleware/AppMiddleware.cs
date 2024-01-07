@@ -12,7 +12,7 @@ public class AppMiddleware : IMiddleware
 
             
             var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-            if (ipAddress != "127.0.0.1" || ipAddress != "::1")
+            if (ipAddress != "127.0.0.1" && ipAddress != "::1")
             {
                 throw new Exception("The request comes from an unknown source.");
             }
