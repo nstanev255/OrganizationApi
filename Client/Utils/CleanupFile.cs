@@ -9,12 +9,12 @@ public class CleanupFile
 
     public static void ClearCSV(string path)
     {
-        // Create file if not exists..
+        // Open file.
         using (var file = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
         {
             StreamReader reader = new StreamReader(file);
             
-            // Clear the lines
+            // Gather the clean lines...
             List<string> cleanLines = new List<string>();
             var line = reader.ReadLine();
 
@@ -26,9 +26,10 @@ public class CleanupFile
             }
 
             Console.WriteLine(cleanLines.Count);
-            // Null out the file.
+            // Clear the file.
             file.SetLength(0);
-
+            
+            // Write the clean lines.
             StreamWriter writer = new StreamWriter(file);
             writer.Write(string.Join("\n", cleanLines));
             writer.Close();
