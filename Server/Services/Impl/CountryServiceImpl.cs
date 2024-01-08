@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Nager.Country;
 using OrganizationApi.Context;
@@ -15,7 +17,11 @@ public class CountryServiceImpl : BaseCrud<Country>, ICountryService
     {
         _countryProvider = new CountryProvider();
     }
-
+    
+    public ImmutableSortedDictionary<string, int> GetAllSortedDict()
+    {
+        return dao.Select(e => new KeyValuePair<string, int>(e.Name, e.Id)).ToImmutableSortedDictionary();
+    }
 
     public async Task<Country?> FindOneByName(string name)
     {

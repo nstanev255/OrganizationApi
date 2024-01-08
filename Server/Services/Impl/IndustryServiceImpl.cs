@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using OrganizationApi.Context;
 using OrganizationApi.Dto;
@@ -13,6 +14,11 @@ public class IndustryServiceImpl : BaseCrud<Industry>, IIndustryService
     {
     }
 
+
+    public ImmutableSortedDictionary<string, int> GetAllSortedDict()
+    {
+        return dao.Select(e => new KeyValuePair<string, int>(e.Name, e.Id)).ToImmutableSortedDictionary();
+    }
 
     public async Task<Industry?> FindOneById(int id)
     {

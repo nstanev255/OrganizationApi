@@ -10,6 +10,7 @@
         <PackageReference Include="ExcelDataReader" Version="3.6.0" />
         <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
         <PackageReference Include="IronPdf" Version="2023.12.6" />
+        <PackageReference Include="linq2db.EntityFrameworkCore" Version="7" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7" />

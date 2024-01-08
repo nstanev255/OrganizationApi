@@ -21,6 +21,7 @@ public class AppMiddleware : IMiddleware
         }
         catch (Exception exception)
         {
+            Console.WriteLine("exception occured " + exception.Message);
             // Make the error the same throughout the app.
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             await context.Response.WriteAsJsonAsync(new { message = exception.Message });

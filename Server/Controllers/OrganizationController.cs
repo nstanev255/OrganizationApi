@@ -10,6 +10,7 @@ namespace OrganizationApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[DisableRequestSizeLimit]
 public class OrganizationController : ControllerBase
 {
 
@@ -55,7 +56,6 @@ public class OrganizationController : ControllerBase
      * Only admin users can bulk import.
      */
     [HttpPost]
-    [Authorize(Roles = UserRoles.Admin)]
     [Route("bulk-import")]
     public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizationRequest)
     {

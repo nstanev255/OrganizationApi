@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using LinqToDB.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OrganizationApi.Context;
 using OrganizationApi.Dto;
@@ -13,12 +17,15 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
     private readonly ICountryService _countryService;
     private readonly IFileService _fileService;
 
+    private readonly ApplicationDbContext _context;
+
     public OrganizationServiceImpl(
         ApplicationDbContext context,
         IIndustryService industryService,
         ICountryService countryService,
         IFileService fileService) : base(context.Organizations)
     {
+        _context = context;
         _industryService = industryService;
         _countryService = countryService;
         _fileService = fileService;
@@ -169,24 +176,72 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         return importedOrganizationModel;
     }
 
+    public Organization? CreateOrganization(
+        OrganizationRequestModel organization,
+        ImmutableSortedDictionary<string, int> countries,
+        ImmutableSortedDictionary<string, int> industries)
+    {
+        var industry = industries[organization.Industry];
+        var country = countries[organization.Country];
+
+        // Validate the website url.
+        if (!UrlUtils.ValidateUrlWithUri(organization.Website))
+        {
+            throw new Exception("Website url is not a valid website url.");
+        }
+
+
+        // We have created or got the industry and the country - now we just need to create the Organization.
+        return new Organization
+        {
+            Name = organization.Name,
+            CountryId = country,
+            IndustryId = industry,
+            Description = organization.Description,
+            Id = organization.Index,
+            Founded = int.Parse(organization.Founded),
+            Website = organization.Website,
+            NumberOfEmployees = organization.NumberOfEmployees,
+            OrganizationId = organization.OrganizationId
+        };
+    }
+
     public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizations)
     {
         int importedOrganizations = 0;
         int importedCountries = 0;
         int importedIndustries = 0;
+
+
+        var sw = new Stopwatch();
+        sw.Start();
+        Console.WriteLine("Started Import...");
+        var bulk = new List<Organization>(); 
+        var countries = GetCountries(organizations);
+        var industries = GetIndustries(organizations);
+        
+        Console.WriteLine("Import countries " + countries.Count);
+        Console.WriteLine("Import industries " + industries.Count);
+        
+        
+        // // Pre BULK (PGSQL COPY) create countries and industries.
+        await _context.BulkCopyAsync(countries);
+        await _context.BulkCopyAsync(industries);
+
+        var cacheCountries = _countryService.GetAllSortedDict();
+        var cacheIndustries = _industryService.GetAllSortedDict();
+
+        Console.WriteLine("BULK copy organizations and industries done...");
+
+        Console.WriteLine("organizations count" + organizations.Count);
+        
         foreach (var organization in organizations)
         {
             try
             {
-                var newOrg = await ImportOrganization(organization);
-
-                if (newOrg.ImportedCountry)
-                    ++importedCountries;
-
-                if (newOrg.ImportedIndustry)
-                    ++importedIndustries;
-
-                ++importedOrganizations;
+                var dbOrg = CreateOrganization(organization, cacheCountries, cacheIndustries);
+                if (dbOrg == null) continue;
+                bulk.Add(dbOrg);
             }
             catch
             {
@@ -194,12 +249,59 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
             }
         }
 
+        Console.WriteLine("Started bulk copy organizations... " + bulk.Count);
+
+        // PGSQL specific BULK operation.
+        await _context.BulkCopyAsync(bulk);
+        await _context.SaveChangesAsync();
+
+
+        Console.WriteLine("Bulk copy Organizations done..");
+        sw.Stop();
+
+        Console.WriteLine("Time taken (seconds) : " + sw.Elapsed.Seconds);
         return new OrganizationImportResponse
         {
             ImportedIndustries = importedIndustries,
             ImportedOrganizations = importedOrganizations,
             ImportedCountries = importedCountries
         };
+    }
+
+    private IList<Country> GetCountries(List<OrganizationRequestModel> organizations)
+    {
+        var countries = new SortedDictionary<string, Country>();
+
+        foreach (var organization in organizations)
+        {
+            var country = countries.ContainsKey(organization.Country);
+            if (!country)
+            {
+                countries.Add(organization.Country, new Country
+                {
+                    Name = organization.Country
+                });
+            }
+        }
+
+        return countries.Values.ToList();
+    }
+
+    private IList<Industry> GetIndustries(List<OrganizationRequestModel> organizations)
+    {
+        var industries = new SortedDictionary<string, Industry>();
+
+        foreach (var organization in organizations)
+        {
+            var industry = industries.ContainsKey(organization.Industry);
+           if(!industry)
+               industries.Add(organization.Industry, new Industry()
+            {
+                Name = organization.Industry
+            });
+        }
+
+        return industries.Values.ToList();
     }
 
     /**

@@ -12,16 +12,18 @@ public class Organization : BaseEntity
     public string Name { get; set; }
     public string Description { get; set; }
     public int NumberOfEmployees { get; set; }
-    public Country? Country 
+    public virtual Country? Country 
     { 
         get => _lazyLoader.Load(this, ref _country);
         set => _country = value;
     }
-    public Industry? Industry 
+    public virtual Industry? Industry 
     { 
         get => _lazyLoader.Load(this, ref _industry);
         set => _industry = value; 
     }
+    public int CountryId { get; set; }
+    public int IndustryId { get; set; }
     public int Founded { get; set; }
     public string Website { get; set; }
     

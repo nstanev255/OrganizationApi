@@ -25,13 +25,13 @@ public class ImportRequestModel
     [Index(4)]
     public string Country { get; set; }
 
-    [JsonProperty("founded")]
-    [Index(5)]
-    public string Founded { get; set; }
-    
     [JsonProperty("description")]
-    [Index(6)]
+    [Index(5)]
     public string Description { get; set; }
+    
+    [JsonProperty("founded")]
+    [Index(6)]
+    public string Founded { get; set; }
     
     [JsonProperty("industry")]
     [Index(7)]
