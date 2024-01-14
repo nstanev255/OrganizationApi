@@ -20,9 +20,9 @@ public class CountryController : ControllerBase
 
     [HttpGet]
     [Route("")]
-    public List<CountryResponseModel> ReadAll()
+    public List<CountryResponseModel> ReadAll(int page = 1, int pageSize = 10)
     {
-        var countries = _countryService.ReadAll();
+        var countries = _countryService.ReadAll(page, pageSize);
 
         if (countries.IsNullOrEmpty())
         {

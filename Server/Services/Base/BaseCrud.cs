@@ -12,9 +12,12 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity
         this.dao = dao;
     }
 
-    public virtual List<T> ReadAll()
+    public virtual List<T> ReadAll(int page, int pageSize)
     {
-        return dao.ToList();
+        return dao.OrderBy(p => p.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
     }
 
     /**

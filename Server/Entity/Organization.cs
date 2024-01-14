@@ -1,13 +1,16 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using OrganizationApi.Entity.Base;
 
 namespace OrganizationApi.Entity;
 
+[Index(nameof(OrganizationId), Name = "Index_OrganizationId")]
 public class Organization : BaseEntity
 {
     private ILazyLoader _lazyLoader;
     private Industry? _industry;
     private Country? _country;
+    
     public string OrganizationId { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }

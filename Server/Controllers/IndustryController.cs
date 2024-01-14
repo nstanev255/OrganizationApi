@@ -19,9 +19,9 @@ public class IndustryController : ControllerBase
 
     [HttpGet]
     [Route("")]
-    public List<IndustryResponseModel> ReadAll()
+    public List<IndustryResponseModel> ReadAll(int page = 1, int pageSize = 10)
     {
-        var industries = _industryService.ReadAll();
+        var industries = _industryService.ReadAll(page, pageSize);
         if (industries.IsNullOrEmpty())
         {
             throw new Exception("No records for industry");

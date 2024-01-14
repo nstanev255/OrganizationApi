@@ -23,9 +23,9 @@ public class OrganizationController : ControllerBase
 
     [HttpGet]
     [Route("")]
-    public List<OrganizationRequestModel> ReadAll()
+    public List<OrganizationRequestModel> ReadAll(int page = 1, int pageSize = 10)
     {
-        var organizations = _organizationService.ReadAll();
+        var organizations = _organizationService.ReadAll(page, pageSize);
         
         if (organizations.IsNullOrEmpty())
         {
@@ -56,6 +56,7 @@ public class OrganizationController : ControllerBase
      * Only admin users can bulk import.
      */
     [HttpPost]
+    [Authorize(Roles = UserRoles.Admin)]
     [Route("bulk-import")]
     public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizationRequest)
     {
@@ -67,7 +68,7 @@ public class OrganizationController : ControllerBase
     [Route("")]
     public async Task<ImportOrganizationModel> Create(OrganizationRequestModel model)
     {
-        return await _organizationService.ImportOrganization(model);
+        return await _organizationService.Create(model);
     }
 
     [HttpPut]

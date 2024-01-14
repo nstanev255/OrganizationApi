@@ -115,7 +115,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         return await Update(organization);
     }
 
-    public async Task<ImportOrganizationModel> ImportOrganization(OrganizationRequestModel organization)
+    public async Task<ImportOrganizationModel> Create(OrganizationRequestModel organization)
     {
         // If we already have this organization, then we will just skip it...
         var dbOrganization = await FindOneByOrganizationId(organization.OrganizationId);
@@ -208,10 +208,10 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
 
     public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizations)
     {
-        int importedOrganizations = 0;
-        int importedCountries = 0;
-        int importedIndustries = 0;
-
+        if (dao.Any())
+        {
+            throw new Exception("Organizations are already imported...");
+        }
 
         var sw = new Stopwatch();
         sw.Start();
@@ -227,6 +227,9 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         // // Pre BULK (PGSQL COPY) create countries and industries.
         await _context.BulkCopyAsync(countries);
         await _context.BulkCopyAsync(industries);
+
+        int importedIndustries = industries.Count;
+        int importedCountries = countries.Count;
 
         var cacheCountries = _countryService.GetAllSortedDict();
         var cacheIndustries = _industryService.GetAllSortedDict();
@@ -254,8 +257,9 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         // PGSQL specific BULK operation.
         await _context.BulkCopyAsync(bulk);
         await _context.SaveChangesAsync();
-
-
+        
+        int importedOrganizations = bulk.Count;
+        
         Console.WriteLine("Bulk copy Organizations done..");
         sw.Stop();
 
