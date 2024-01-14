@@ -3,7 +3,7 @@ using OrganizationApi.Entity;
 
 namespace OrganizationApi.Dto;
 
-public class OrganizationRequestModel
+public class OrganizationModel
 {
     [JsonProperty("index")]
     public int Index { get; set; }
@@ -32,11 +32,11 @@ public class OrganizationRequestModel
     [JsonProperty("number_of_employees")]
     public int NumberOfEmployees { get; set; }
 
-    public OrganizationRequestModel()
+    public OrganizationModel()
     {
     }
 
-    public OrganizationRequestModel(Organization organization)
+    public OrganizationModel(Organization organization)
     {
         Name = organization.Name;
         Description = organization.Description;

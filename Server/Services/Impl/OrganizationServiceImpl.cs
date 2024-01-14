@@ -32,6 +32,20 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
     }
 
 
+    public async Task<List<Organization>> GetBiggestOrganizations()
+    {
+        if (!dao.Any())
+        {
+            throw new Exception("No records found..");
+        }
+
+        return await dao.OrderByDescending(x => x.NumberOfEmployees)
+            .Take(5)
+            .ToListAsync();
+
+        throw new NotImplementedException();
+    }
+
     public async Task<Organization?> FindOneByOrganizationId(string id)
     {
         return await dao.FirstOrDefaultAsync(o => o.OrganizationId == id);
@@ -115,7 +129,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         return await Update(organization);
     }
 
-    public async Task<ImportOrganizationModel> Create(OrganizationRequestModel organization)
+    public async Task<ImportOrganizationModel> Create(OrganizationModel organization)
     {
         // If we already have this organization, then we will just skip it...
         var dbOrganization = await FindOneByOrganizationId(organization.OrganizationId);
@@ -177,7 +191,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
     }
 
     public Organization? CreateOrganization(
-        OrganizationRequestModel organization,
+        OrganizationModel organization,
         ImmutableSortedDictionary<string, int> countries,
         ImmutableSortedDictionary<string, int> industries)
     {
@@ -206,7 +220,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         };
     }
 
-    public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationRequestModel> organizations)
+    public async Task<OrganizationImportResponse> ImportOrganizations(List<OrganizationModel> organizations)
     {
         if (dao.Any())
         {
@@ -272,7 +286,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         };
     }
 
-    private IList<Country> GetCountries(List<OrganizationRequestModel> organizations)
+    private IList<Country> GetCountries(List<OrganizationModel> organizations)
     {
         var countries = new SortedDictionary<string, Country>();
 
@@ -291,7 +305,7 @@ public class OrganizationServiceImpl : BaseCrud<Organization>, IOrganizationServ
         return countries.Values.ToList();
     }
 
-    private IList<Industry> GetIndustries(List<OrganizationRequestModel> organizations)
+    private IList<Industry> GetIndustries(List<OrganizationModel> organizations)
     {
         var industries = new SortedDictionary<string, Industry>();
 
