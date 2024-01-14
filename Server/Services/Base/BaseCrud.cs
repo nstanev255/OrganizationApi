@@ -12,6 +12,9 @@ public abstract class BaseCrud<T> : IBaseCrud<T> where T : BaseEntity
         this.dao = dao;
     }
 
+    /**
+     * ReadAll with pagination..
+     */
     public virtual List<T> ReadAll(int page, int pageSize)
     {
         return dao.OrderBy(p => p.Id)
