@@ -63,7 +63,6 @@ public class OrganizationController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
     [Route("biggest")]
     public async Task<List<OrganizationModel>> GetBiggestOrganizations()
     {
